@@ -32,7 +32,7 @@ def render_menu_page():  # put application's code here
     product_list = cur.fetchall()
     con.close()
     print(product_list)
-    return render_template('menu.html')
+    return render_template('menu.html', products=product_list)
 
 @app.route('/contact')
 def render_contact_page():  # put application's code here
