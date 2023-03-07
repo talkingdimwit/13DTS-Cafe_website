@@ -2,7 +2,7 @@ from flask import Flask, render_template
 import sqlite3
 from sqlite3 import Error
 
-DATABASE = "C:/Users/19037/PycharmProjects/13DTS-Cafe_website/smile.db"
+DATABASE ="C:/Users/maxmo/PycharmProjects/13DTS-Cafe_website/smile.db"  #C:/Users/19037/PycharmProjects/13DTS-Cafe_website/smile.db
 
 app = Flask(__name__)
 
@@ -45,5 +45,11 @@ def render_contact_page():  # put application's code here
 @app.route('/login', methods=['POST', 'GET'])
 def render_login_page():  # put application's code here
     return render_template('login.html')
+
+@app.route('/signup', methods=['POST', 'GET'])
+def render_signup_page():  # put application's code here
+    if request.method = validate(request.form.get('f.name'))
+        print(request.form)
+    return render_template('signup.html')
 
 app.run(host='0.0.0.0', debug=True)
