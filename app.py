@@ -1,8 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request, validate
 import sqlite3
 from sqlite3 import Error
 
-DATABASE ="C:/Users/maxmo/PycharmProjects/13DTS-Cafe_website/smile.db"  #C:/Users/19037/PycharmProjects/13DTS-Cafe_website/smile.db
+
+#C:/Users/maxmo/PycharmProjects/13DTS-Cafe_website/smile.db
+
+DATABASE ="C:/Users/19037/PycharmProjects/13DTS-Cafe_website/smile.db"
 
 app = Flask(__name__)
 
@@ -48,8 +51,13 @@ def render_login_page():  # put application's code here
 
 @app.route('/signup', methods=['POST', 'GET'])
 def render_signup_page():  # put application's code here
-    if request.method = validate(request.form.get('f.name'))
+    if request.method == "POST":
         print(request.form)
+        fname = request.form.get("fname").lower().strip()
+        lnamerequest = request.form.get("lname").lower().strip()
+        email = request.form.get("email").lower().strip()
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
     return render_template('signup.html')
 
 app.run(host='0.0.0.0', debug=True)
