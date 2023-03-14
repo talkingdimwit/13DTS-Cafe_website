@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
@@ -10,6 +10,14 @@ DATABASE ="C:/Users/19037/PycharmProjects/13DTS-Cafe_website/smile.db"
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = ("deeznutz42069")
+
+def is_logged_in():
+    if session.get("email") is None:
+        print("not logged in")
+        return False
+    else:
+        print("logged in")
+        return True
 
 def create_connection(db_file):
     """
@@ -26,7 +34,7 @@ def create_connection(db_file):
 
 @app.route('/')
 def render_homepage():  # put application's code here
-    return render_template('home.html')
+    return render_template('home.html', logged_in=is_logged_in())
 
 @app.route('/menu/<cat_id>')
 def render_menu_page(cat_id):  # put application's code here
@@ -41,15 +49,24 @@ def render_menu_page(cat_id):  # put application's code here
     category_list = cur.fetchall()
     con.close()
     print(product_list)
-    return render_template('menu.html', products=product_list, categories=category_list)
+    return render_template('menu.html', products=product_list, categories=category_list, logged_in=is_logged_in())
 
 @app.route('/contact')
 def render_contact_page():  # put application's code here
+
+
+    return render_template('contact.html', logged_in=is_logged_in())
+
+@app.route('/login', methods=['POST', 'GET'])
+def render_login_page():  # put application's code here
+    if is_logged_in():
+        return redirect('/menu/1')
+    print("logging in")
     if request.method == "POST":
         email = request.form['email'].strip().lower()
         password = request.form['password'].strip()
-
-        query = """SELECT id, fname, password, FROM user WHERE email = ? """
+        print(email)
+        query = """SELECT id, fname, password FROM user WHERE email = ?"""
         con = create_connection(DATABASE)
         cur = con.cursor()
         cur.execute(query, (email,))
@@ -61,26 +78,22 @@ def render_contact_page():  # put application's code here
             first_name = user_data[1]
             db_password = user_data[2]
         except IndexError:
-            return redirect("/login?error=Email+or+invalid+password+inncorrect")
+            return redirect("/login?error=Email+or+invalid+password+incorrect")
 
         if not bcrypt.check_password_hash(db_password, password):
             return redirect(request.referrer, "?error=Email+or+invalid+password+inncorrect")
 
         session['email'] = email
-        session['userid'] = userid
         session['firstname'] = first_name
         session['user_id'] = user_id
         print(session)
         return redirect('/')
-
-    return render_template('contact.html')
-
-@app.route('/login', methods=['POST', 'GET'])
-def render_login_page():  # put application's code here
     return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def render_signup_page():  # put application's code here
+    if is_logged_in():
+        return redirect('/menu/1')
     if request.method == "POST":
         print(request.form)
         fname = request.form.get("fname").title().strip()
@@ -112,6 +125,13 @@ def render_signup_page():  # put application's code here
 
         return redirect("\login")
 
-    return render_template('signup.html')
+    return render_template('signup.html', logged_in=is_logged_in())
+
+@app.route('/logout')
+def logout():
+    print(list(session.keys()))
+    [session.pop(key) for key in list(session.keys())]
+    print(list(session.keys()))
+    return redirect('/?message=see+you+next+time!')
 
 app.run(host='0.0.0.0', debug=True)
