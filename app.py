@@ -175,7 +175,7 @@ def delete_category():
         return render_template("delete_confirm.html", id=cat_id, name=cat_name, type="category")
     return redirect("/admin")
 
-@app.route("/delete_category_confirm/<cat_id>")
+@app.route('/delete_category_confirm/<cat_id>')
 def delete_category_confirm(cat_id):
     if not is_logged_in():
         return redirect('/?message=need+to+be+logged+in')
